@@ -20,7 +20,6 @@
     var webGLRenderer = new THREE.WebGLRenderer();
     webGLRenderer.setClearColor(0x333333);
     webGLRenderer.setSize(window.innerWidth, window.innerHeight);
-
     var texture = new THREE.TextureLoader().load("./img/1.png");
     var geometry = new THREE.CubeGeometry(3,3,3);
     var material = new THREE.MeshBasicMaterial({
