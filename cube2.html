@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>webgl demo</title>
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        <script type="text/javascript" src="./js/three.min.js"></script>
+        <style>
+            *{margin:0;padding: 0;}
+            html,body{
+                height: 100%;
+                overflow: hidden;
+            }
+        </style>
+    </head>
+<body>
+<script type="text/javascript">
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100000);
+    var webGLRenderer = new THREE.WebGLRenderer();
+    webGLRenderer.setClearColor(0x333333);
+    webGLRenderer.setSize(window.innerWidth, window.innerHeight);
+
+
+    var geometry = new THREE.CubeGeometry(3,3,3);
+    var materials = [];
+    for(var i=1;i<=6;i++){
+        materials.push(new THREE.MeshBasicMaterial({
+            transparent:true,
+            map: new THREE.TextureLoader().load("./img/"+i+".png")
+        }))
+    }
+
+    var mesh = new THREE.Mesh(geometry,new THREE.MeshFaceMaterial(materials));
+    mesh.position.set(0,0,0);
+    scene.add(mesh);
+    
+    camera.position.set(10,10,10);
+    camera.lookAt(scene.position);
+    function render(){
+        requestAnimationFrame(render);
+        mesh.rotation.x+=0.02;
+        mesh.rotation.z+=0.02;
+        webGLRenderer.clear();
+        webGLRenderer.render(scene,camera);
+    }
+    render();
+    document.body.appendChild(webGLRenderer.domElement);
+</script>
+</body>
+</html>
