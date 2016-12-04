@@ -43,7 +43,6 @@
     cube.position.z = 0;
     scene.add(cube);
 
-
     // 球面体
     var sphereGeometry = new THREE.SphereGeometry(4,20,20);
     var sphereMaterial = new THREE.MeshLambertMaterial({color:0x7777ff});
@@ -58,7 +57,6 @@
     camera.position.y = 40;
     camera.position.z = 30;
     camera.lookAt(scene.position);
-
     // 创建光源
     // 聚光灯
     var light  = new THREE.SpotLight(0xffffff);
