@@ -16,8 +16,8 @@
 <script>
     var scene = new THREE.Scene();
     var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, .1, 1000);
-    var renderer = new THREE.WebGLRenderer();
-    renderer.setClearColor(new THREE.Color(0xEEEEEE,1.0));
+     var renderer = new THREE.WebGLRenderer({antialias:true});
+    renderer.setClearColor(0x333333);
     renderer.setSize(window.innerWidth,window.innerHeight);
     // 启动阴影效果
     renderer.shadowMapEnabled = true;
@@ -59,13 +59,13 @@
     camera.lookAt(scene.position);
     // 创建光源
     // 聚光灯
-    var light  = new THREE.SpotLight(0xffffff);
+    // var light  = new THREE.SpotLight(0xffffff);
 
     // 环境光
     // var light  = new THREE.AmbientLight(0xcccccc);
 
     // 点光源
-    // var light  = new THREE.PointLight(0xffffff);
+    var light  = new THREE.PointLight(0xffffff);
 
     // 平行光
     // var light  = new THREE.DirectionalLight(0xffffff);
