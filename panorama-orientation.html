@@ -16,6 +16,7 @@
 		<div id="container"></div>
 		<script type="text/javascript" src="./js/three.min.js"></script>
         <script src="./js/DeviceOrientationControls.js"></script>
+        <!-- // <script src="js/OrbitControls.js"></script> -->
 		<script>
 			(function() {
 				var scene = new THREE.Scene();
@@ -30,21 +31,31 @@
 				var geometry = new THREE.SphereGeometry( 500, 16, 8 );
 				geometry.scale( - 1, 1, 1 ); // 注意如果在球里面观看时需要设置 
 
-				//添加设备旋转控制
-				var controls = new THREE.DeviceOrientationControls( camera );
-
 				var material = new THREE.MeshBasicMaterial( {
 					map: new THREE.TextureLoader().load( 'img/pano_sphere.jpg' )
 				} );
 
 				var mesh = new THREE.Mesh( geometry, material );
 				scene.add( mesh );
-			
-				function animate(){
-					window.requestAnimationFrame( animate );
-					controls.update();
+
+				function render(){
+					DeviceControls.update();
 					renderer.render(scene, camera);
 				}
+				function animate(){
+					render()
+					window.requestAnimationFrame( animate );
+				}
+
+				// 添加手动拖动 与DeviceOrientationControls不可共存
+				// var controls = new THREE.OrbitControls(camera,renderer.domElement );
+				// controls.enableDamping = true;
+			 //    controls.dampingFactor = 0.25;
+			 //    controls.enableZoom = false;
+
+					//添加设备旋转控制
+				var DeviceControls = new THREE.DeviceOrientationControls( camera,true );
+
 				document.body.appendChild(renderer.domElement);
 				animate();
 			})();
