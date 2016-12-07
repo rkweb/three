@@ -3,7 +3,7 @@
 	<head>
 		<title></title>
 		<meta charset="utf-8">
-		<meta name="viewport" content="user-scalable=no, initial-scale=1">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<style>
 			body {
 				margin: 0px;
@@ -13,33 +13,54 @@
 		</style>
 	</head>
 	<body>
-		<div id="container"></div>
 		<script type="text/javascript" src="./js/three.min.js"></script>
         <script src="./js/DeviceOrientationControls.js"></script>
-        <!-- // <script src="js/OrbitControls.js"></script> -->
 		<script>
-			(function() {
+			var isUserInteracting = false,lon = 0,lat = 0,phi = 0, theta = 0;
 				var scene = new THREE.Scene();
 				var renderer = new THREE.WebGLRenderer();
 				renderer.setSize(window.innerWidth, window.innerHeight);
-				var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-				camera.position.x = 0;
-			    camera.position.y = 0;
-			    camera.position.z = 50;
-    			camera.lookAt(new THREE.Vector3(0, 0, 0));
+				var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1100);
+				camera.target = new THREE.Vector3( 0, 0, 0 );
 
-				var geometry = new THREE.SphereGeometry( 500, 16, 8 );
-				geometry.scale( - 1, 1, 1 ); // 注意如果在球里面观看时需要设置 
+				var geometry = new THREE.SphereGeometry( 500, 60, 40 );
+				geometry.scale( - 1, 1, 1 ); 
 
 				var material = new THREE.MeshBasicMaterial( {
 					map: new THREE.TextureLoader().load( 'img/pano_sphere.jpg' )
 				} );
-
 				var mesh = new THREE.Mesh( geometry, material );
 				scene.add( mesh );
-
+				
+				document.addEventListener( 'touchstart',onTouchstart, false );
+				document.addEventListener( 'touchmove', onTouchsmove, false );
+				document.addEventListener( 'touchend', onTouchsend, false );
+				function onTouchstart( event ){
+					event.preventDefault();
+					isUserInteracting = true;
+					onPointerDownPointerX = event.targetTouches[0].pageX;
+					onPointerDownPointerY = event.targetTouches[0].pageY;
+					onPointerDownLon = lon; //经度
+					onPointerDownLat = lat; //纬度
+				}
+				function onTouchsmove( event ) {
+					if ( isUserInteracting === true ) {
+						lon = ( onPointerDownPointerX - event.targetTouches[0].pageX ) * 0.1 + onPointerDownLon;
+						lat = ( event.targetTouches[0].pageY - onPointerDownPointerY ) * 0.1 + onPointerDownLat;
+					}
+				}
+				function onTouchsend( event ) {
+					isUserInteracting = false;
+				}
 				function render(){
-					DeviceControls.update();
+					lat = Math.max( - 85, Math.min( 85, lat ) );
+					phi = THREE.Math.degToRad( 90 - lat );
+					theta = THREE.Math.degToRad( lon );
+					camera.target.x = 500 * Math.sin( phi ) * Math.cos( theta );
+					camera.target.y = 500 * Math.cos( phi );
+					camera.target.z = 500 * Math.sin( phi ) * Math.sin( theta );
+					camera.lookAt(camera.target);
+					// DeviceControls.update();
 					renderer.render(scene, camera);
 				}
 				function animate(){
@@ -47,18 +68,10 @@
 					window.requestAnimationFrame( animate );
 				}
 
-				// 添加手动拖动 与DeviceOrientationControls不可共存
-				// var controls = new THREE.OrbitControls(camera,renderer.domElement );
-				// controls.enableDamping = true;
-			 //    controls.dampingFactor = 0.25;
-			 //    controls.enableZoom = false;
-
-					//添加设备旋转控制
-				var DeviceControls = new THREE.DeviceOrientationControls( camera,true );
-
+				//添加设备旋转控制 与手势不能同时使用
+				// var DeviceControls = new THREE.DeviceOrientationControls(camera,true);
 				document.body.appendChild(renderer.domElement);
 				animate();
-			})();
 		</script>
 	</body>
 </html>

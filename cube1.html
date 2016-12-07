@@ -3,7 +3,6 @@
     <head>
         <title>webgl demo</title>
         <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-        <script src="http://go.163.com/2015/public/common/js/zepto.min.js"></script>
         <script type="text/javascript" src="./js/three.min.js"></script>
         <style>
             *{margin:0;padding: 0;}
@@ -15,7 +14,9 @@
     </head>
 <body>
 <script type="text/javascript">
+
     var scene = new THREE.Scene();
+    var mouseX = 0, mouseY = 0;
     var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100000);
     var webGLRenderer = new THREE.WebGLRenderer();
     webGLRenderer.setClearColor(0x333333);
@@ -31,12 +32,35 @@
     mesh.position.set(0,0,0);
     scene.add(mesh);
 
+    document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+    document.addEventListener( 'touchmove', onDocumentTouchMove, false );
+    document.addEventListener( 'touchend', onDocumentTouchEnd, false );
+    var windowHalfX = window.innerWidth / 2;
+    var windowHalfY = window.innerHeight / 2;
+
+    function onDocumentMouseMove(event) {
+        mouseX = ( event.clientX - windowHalfX )*0.1;
+        mouseY = ( event.clientY - windowHalfY )*0.1;
+    }
+    function onDocumentTouchMove(event) {
+        event.preventDefault();
+        mouseX = ( event.targetTouches[0].pageX - windowHalfX )*0.5;
+        mouseY = ( event.targetTouches[0].pageY - windowHalfY )*0.5;
+    }
+    function onDocumentTouchEnd(event){
+        mouseX = 0;
+        mouseY = 0;
+    }
+    
     camera.position.set(10,10,10);
     camera.lookAt(scene.position);
     function render() {
         requestAnimationFrame(render);
         mesh.rotation.x+=0.02;
         mesh.rotation.z+=0.02;
+        camera.position.x += ( mouseX - camera.position.x ) * .08;
+        camera.position.y += ( - mouseY - camera.position.y ) * .08;
+        camera.lookAt( scene.position );
         webGLRenderer.clear();
         webGLRenderer.render(scene,camera);
     }
