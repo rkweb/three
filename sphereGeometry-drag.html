@@ -17,7 +17,7 @@
 <script type="text/javascript">
     var renderer = new THREE.WebGLRenderer({antialias:true});
     var scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 1000);
+    var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 100000);
     camera.position.set(10,10,10);
     camera.lookAt(scene.position);
     renderer.setClearColor(0x333333);
@@ -25,11 +25,25 @@
     var geometry = new  THREE.SphereGeometry(4, 100, 50 );
 
     var material = new THREE.MeshBasicMaterial({
-        map: new THREE.TextureLoader().load( 'img/pano_sphere.jpg' )
+        map: new THREE.TextureLoader().load( 'img/pano_sphere2.jpg' )
     });
     var mesh = new THREE.Mesh(geometry,material);
     mesh.position.set(0,0,0);
     scene.add(mesh);
+
+
+     var texture = new THREE.TextureLoader().load("./img/1.png");
+    var geometry = new THREE.PlaneGeometry(256, 256);
+    var material = new THREE.MeshBasicMaterial({
+        transparent: true,
+        map: texture
+    });
+    mesh = new THREE.Mesh(geometry,material);
+    mesh.position.set(0,0,0);
+
+
+
+
 
     function render(){
         requestAnimationFrame(render);
@@ -42,3 +56,6 @@
 </script>
 </body>
 </html>
+
+
+

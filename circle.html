@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<meta name="viewport" content="width=640,target-densitydpi=device-dpi,user-scalable=no">
+	<meta name="Keywords" content="">
+	<meta name="Description" content="">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta name="apple-touch-fullscreen" content="yes" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta name="format-detection" content="telephone=no"/>
+    <style>
+        *{
+            margin: 0px;
+            padding: 0px;
+        }
+        html,body{
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="canvas"></div>
+<script src="http://go.163.com/2015/public/common/js/zepto.min.js"></script>
+<script src="js/three.min.js"></script>
+<script src="./js/orienter.min.js"></script>
+<script src="./js/tween.min.js"></script>
+<script>
+    $('body').on('touchmove',function(e){
+        e.preventDefault();
+    });
+    var renderer = new THREE.WebGLRenderer({
+        alpha:true,
+        antialias:true
+    });
+
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight,1,1000);
+    camera.position.set(0,0,0);
+    camera.target = new THREE.Vector3( 0, 0, 0 );
+    camera.lookAt(scene.position);
+    renderer.setSize(window.innerWidth,window.innerHeight);
+
+    var geometry = new THREE.SphereGeometry(22, 60, 40  );
+    geometry.scale(-1, 1, 1);
+    var material = new THREE.MeshPhongMaterial({
+        map: new THREE.TextureLoader().load('img/pano_sphere.jpg')
+    });
+    var mesh = new THREE.Mesh(geometry,material);
+    mesh.position.set(0,0,0);
+    scene.add(mesh);
+
+
+    function addMesh(i,mesh,multiply,radius){
+        var vector = new THREE.Vector3();
+        var phi = Math.acos( -1 + ( 2 * i ) / 6 );
+        var theta = Math.sqrt( 6 * Math.PI ) * phi;
+        mesh.position.x = radius* Math.cos( theta ) * Math.sin( phi );
+        mesh.position.y = radius* Math.sin( theta ) * Math.sin( phi );
+        mesh.position.z = radius* Math.cos( phi );
+        vector.copy( mesh.position ).multiplyScalar( multiply );
+        mesh.lookAt( vector );
+        scene.add(mesh);
+    }
+    var vector = new THREE.Vector3();
+    var geometry = new THREE.PlaneGeometry(240/80,205/80);
+    var texture = new THREE.TextureLoader().load('./img/scaleBtn.png');
+    var material = new THREE.MeshBasicMaterial({
+        transparent: true,
+        map: texture
+    });
+    var mesh = new THREE.Mesh(geometry,material);
+    addMesh(1,mesh,1,21);
+
+
+    var light = new THREE.AmbientLight(0xffffff);
+    scene.add(light);
+
+    var isUserInteracting = false,lon = 0,lat = 0,phi = 0, theta = 0;
+    document.addEventListener( 'touchstart',onTouchstart, false );
+    document.addEventListener( 'touchmove', onTouchsmove, false );
+    document.addEventListener( 'touchend', onTouchsend, false );
+    function onTouchstart( event ){
+        isUserInteracting = true;
+        onPointerDownPointerX = event.targetTouches[0].pageX;
+        onPointerDownPointerY = event.targetTouches[0].pageY;
+        onPointerDownLon = lon; //经度
+        onPointerDownLat = lat; //纬度
+    }
+    function onTouchsmove( event ) {
+        if ( isUserInteracting === true ) {
+            lon = ( onPointerDownPointerX - event.targetTouches[0].pageX ) * 0.1 + onPointerDownLon;
+            lat = ( event.targetTouches[0].pageY - onPointerDownPointerY ) * 0.1 + onPointerDownLat;
+        }
+    }
+    function onTouchsend( event ) {
+        isUserInteracting = false;
+    }
+
+    var o = new Orienter();
+    var lon_orienter = 0,lat_orienter = 0;
+    var old_lon = 0;
+    var offset_lon = 0;
+    var old_lat = 0;
+    var offset_lat = 0;
+    o.handler = function (obj) {
+        if(Math.abs(old_lon-obj.lon )>=1){
+            if((obj.lon - old_lon)<0 || (obj.lon-old_lon)>100){
+                offset_lon+=1;
+            }else if((obj.lon - old_lon)>0 || (obj.lon-old_lon)<-100){
+                offset_lon-=1;
+            }
+        }
+        if(Math.abs(old_lat-obj.lat )>=1){
+            if((obj.lat - old_lat)<0){
+                offset_lat-=1;
+            }else if((obj.lat - old_lat)>0){
+                offset_lat+=1;
+            }
+        }
+        old_lon =  obj.lon;
+        old_lat = obj.lat;
+        lon_orienter =offset_lon;
+        lat_orienter =offset_lat;
+    };
+    o.init();
+
+    var move_phi = 0;
+    var move_theta = 0;
+    var total_lat = 0;
+    function render(){
+        total_lat = Math.max( - 85, Math.min( 85, (lat_orienter+lat) ) );
+        phi = THREE.Math.degToRad( 90 - (total_lat));
+        theta = THREE.Math.degToRad( lon+lon_orienter );
+        move_phi += 0.1*(phi - move_phi);
+        move_theta += 0.1*(theta - move_theta);
+        camera.target.x = 150 * Math.sin( move_phi )*Math.cos(move_theta);
+        camera.target.y = 150 * Math.cos( move_phi );
+        camera.target.z = 150 * Math.sin(move_phi)*Math.sin(move_theta);
+        camera.lookAt(camera.target);
+
+        requestAnimationFrame(render);
+        renderer.render(scene,camera);
+        TWEEN.update();
+    }
+    render();
+    $('.canvas')[0].appendChild(renderer.domElement);
+</script>
+</body>
+</html>
+
+
+
+
+ 

@@ -48,7 +48,7 @@
 					height: 20,
 					curveSegments: 2
 				});
-
+				geometry.scale( - 1, 1, 1 ); 
 				geometry.computeBoundingBox();
 
 				var centerOffset = -0.5 * ( geometry.boundingBox.max.x - geometry.boundingBox.min.x );
