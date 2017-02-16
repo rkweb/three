@@ -18,19 +18,19 @@
             color:0xcccccc,
         });
         var mesh=new THREE.Mesh(geometry, material);
-        // scene.add(mesh);
+        scene.add(mesh);
 
-        // var loader=new THREE.OBJLoader();
-        // loader.load('dog/dog.obj', function(dogObject){
-        //     dogObject.scale.set(0.1, 0.1, 0.1);
-        //     dogObject.position.y=50;
-        //     dogObject.position.x=-30;
-        //     scene.add(dogObject);
-        // });
+        var loader=new THREE.OBJLoader();
+        loader.load('dog/dog.obj', function(dogObject){
+            dogObject.scale.set(0.1, 0.1, 0.1);
+            dogObject.position.y=50;
+            dogObject.position.x=-30;
+            scene.add(dogObject);
+        });
 
         var loader2=new THREE.OBJMTLLoader();
-        loader2.load('port.obj', 'port.mtl', function(dogObject){
-            dogObject.scale.set(10, 10, 10);
+        loader2.load('car.obj', 'car.mtl', function(dogObject){
+            dogObject.scale.set(0.2, 0.2, 0.2);
             dogObject.position.y=50;
             dogObject.position.x=30;
             scene.add(dogObject);

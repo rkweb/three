@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<meta name="viewport" content="width=640,target-densitydpi=device-dpi,user-scalable=no">
+	<script src="http://go.163.com/2015/public/common/js/zepto.min.js"></script>
+	<script src="../js/three.min.js"></script>
+	<script src="../js/OrbitControls.js"></script>
+	<style>
+		*{margin:0;padding: 0;}
+		html,body{
+			height: 100%;
+			width: 100%;
+			overflow: hidden;
+		}
+	</style>
+</head>
+<body>
+<script>
+	/* 场景 */
+	var scene = new THREE.Scene();
+	/* 摄像头 */
+	var	camera = new THREE.PerspectiveCamera(45, $(document).width()/$(document).height(), 0.1, 10000);
+		camera.position.set(0, 0, 22);
+		scene.add(camera);
+	/* 渲染器 */
+	var	renderer = new THREE.WebGLRenderer();
+		renderer.setSize($(document).width() , $(document).height());
+		document.body.appendChild(renderer.domElement);
+	/* 灯光 */
+	var light = new THREE.DirectionalLight(0xFFFFFF);
+		light.position.set(0, 0, 99).normalize();
+		scene.add(light);
+	var light = new THREE.DirectionalLight(0xFFFFFF);
+		light.position.set(0, 0, -99).normalize();
+		scene.add(light);
+	
+	/* 显示对象 */
+	var material = new THREE.MeshLambertMaterial({ color: Math.random()*0xffff00}),
+		obj;
+	var loader = new THREE.JSONLoader(true);
+    loader.load("./MGA.js", function ( geometry ) {
+		obj = new THREE.Mesh(geometry, material);
+		console.log(obj);
+		obj.position.set(0,0,0);
+		scene.add(obj);
+	});
+
+	var controls = new THREE.OrbitControls(camera,renderer.domElement);
+	controls.autoRotate = true;
+	controls.rotateSpeed = 0.4;
+	// controls.enableZoom = false;
+	// controls.autoRotateSpeed = 1.5;
+	// controls.maxPolarAngle = Math.PI/2;
+	setInterval(function(){
+		var r = Math.random();
+		obj.material.color = {
+			"r":Math.random(),
+			"g":Math.random(),
+			"b":Math.random()
+		}
+	},3000);
+	function render(){
+		controls.update();
+		requestAnimationFrame(render);
+		renderer.render(scene, camera);
+	}
+	render()
+</script>
+</body>
+</html>
