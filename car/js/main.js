@@ -64,6 +64,7 @@ var loader = new THREE.BinaryLoader();
 loader.load( "./gallardo/GallardoNoUv_bin.js", function(  geometry, materials ){ 
   var material = new THREE.MeshFaceMaterial(materials);
   var mesh = new THREE.Mesh( geometry, material);
+  console.log(mesh);
   mesh.material.materials[1].color = mesh.material.materials[2].color = mesh.material.materials[4].color =mesh.material.materials[5].color = mesh.material.materials[6].color = {"r":0.1,"g":0.1,"b":0.1};
   mesh.material.materials[3].color = {"r":1,"g":0.3,"b":0.1};
   mesh.position.set(0,26,0);
