@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<title>threejs == webGL == reflection</title>
+	<style>
+		body {
+			background:#000;
+			color:#fff;
+			padding:0;
+			margin:0;
+			overflow:hidden;
+			font-family:georgia;
+			text-align:center;
+		}
+		a { color:skyblue; text-decoration:none }
+		#info {
+			position: absolute;
+			width: 100%;
+		}
+	</style>
+</head>
+<body>
+
+
+    <script src="js/three.min.js"></script>
+    <script src="js/OrbitControls.js"></script>
+    <script>
+    
+
+	    var camear, scene, renderer, ambient;
+
+	    var material, sphereMaterial, textureCube;
+
+	    var cubeMesh, sphereMesh;
+
+	    var controls;
+
+	    var cameraCube, sceneCube;
+
+	    init();
+	    animate();
+
+	    function init(){
+
+	        //相机
+	        camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 100000 );
+	        camera.position.set(0, 0, 1000);
+	        cameraCube = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 100000 );
+
+	        controls = new THREE.OrbitControls( camera );
+	        controls.minDistance = 500;
+			controls.maxDistance = 2500;
+
+
+			//场景
+	        scene = new THREE.Scene();
+	        sceneCube = new THREE.Scene();
+
+
+	        //灯光
+	       ambient = new THREE.AmbientLight( 0xffffff );
+		   scene.add( ambient );
+
+		   //Textures
+		   var imgArr = [
+		   		'img/cube/posx.jpg',
+		   		'img/cube/negx.jpg',
+		   		'img/cube/posy.jpg',
+		   		'img/cube/negy.jpg',
+		   		'img/cube/posz.jpg',
+		   		'img/cube/negz.jpg'
+		   ];
+
+		    textureCube = new THREE.CubeTextureLoader().load( imgArr );
+		    textureCube.format = THREE.RGBFormat;
+			textureCube.mapping = THREE.CubeReflectionMapping; 
+
+		    var cubeShader = THREE.ShaderLib[ "cube" ];
+		    material = new THREE.ShaderMaterial( {
+				fragmentShader: cubeShader.fragmentShader,
+				vertexShader: cubeShader.vertexShader,
+				uniforms: cubeShader.uniforms,
+				depthWrite: false,
+				side: THREE.BackSide
+			} );
+			material.uniforms[ "tCube" ].value = textureCube;
+
+
+			cubeMesh = new THREE.Mesh( new THREE.BoxGeometry( 100, 100, 100 ), material );
+			sceneCube.add( cubeMesh );
+
+
+			var geometry = new THREE.SphereGeometry( 300, 24, 24 );
+			sphereMaterial = new THREE.MeshLambertMaterial( { envMap: textureCube } );
+			sphereMesh = new THREE.Mesh( geometry, sphereMaterial );
+			// sphereMesh.position.set(0, 0, -50);
+			scene.add( sphereMesh );
+
+
+			//渲染器
+	        renderer = new THREE.WebGLRenderer();
+	        //设置canvas背景色和背景色透明度
+	        renderer.setClearColor(0x000000,0);
+	        //
+	        renderer.autoClear = false;
+			renderer.setPixelRatio( window.devicePixelRatio );
+	        renderer.setSize( window.innerWidth, window.innerHeight );
+	        renderer.setFaceCulling( THREE.CullFaceNone );
+	        document.body.appendChild( renderer.domElement );
+
+
+
+	    }
+
+	    function animate() {
+
+	    	requestAnimationFrame(animate);
+	    	
+	    	render();
+
+	    	controls.update();
+	    
+	    }
+
+
+	    function render() {
+
+	        camera.lookAt( scene.position );
+	        cameraCube.rotation.copy( camera.rotation );
+	       
+	        renderer.render(sceneCube, cameraCube);
+	        renderer.render(scene, camera);
+	        
+	    }
+
+
+    </script>
+	
+</body>
+</html>
