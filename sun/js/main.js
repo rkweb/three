@@ -1,7 +1,7 @@
 $('body').bind("touchmove",function(ev){
-	ev.preventDefault();
+    ev.preventDefault();
 })
-	 var canvas = document.querySelector('#main-canvas');
+     var canvas = document.querySelector('#main-canvas');
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -233,9 +233,9 @@ $('body').bind("touchmove",function(ev){
         }
         // effect.render(scene, camera);
         // if(vrFlag){
-        // 	effect.render(scene, camera);
+        //  effect.render(scene, camera);
         // }else{
-        // 	renderer.render(scene, camera);
+        //  renderer.render(scene, camera);
         // }
         renderer.render(scene, camera);
         
